@@ -1,5 +1,6 @@
 package com.shortcuts.example.single_signon.salon;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,9 @@ public class SalonAuthorizationServer {
 
             // convert the input into a authenticationCredentials object
             String requestBody = request.getBody();
-            AuthenticationCredentials authenticationCredentials = new ObjectMapper().readValue(requestBody, AuthenticationCredentials.class);
+            AuthenticationCredentials authenticationCredentials = new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .readValue(requestBody, AuthenticationCredentials.class);
 
             // validate the supplied authenticationCredentials
             ValidatedCredentials validatedCredentials = validate(authenticationCredentials);

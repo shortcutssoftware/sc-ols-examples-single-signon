@@ -125,8 +125,6 @@ testing tool (like [Postman](https://www.getpostman.com/)) to execute the follow
 ~~~
 POST /authenticate HTTP/1.1
 Host: localhost:8080
-Cache-Control: no-cache
-Postman-Token: 95b0b2b8-f8fc-2a22-fdfe-1d79859e06e8
 
 {
     "firstName": "Orville",
@@ -138,7 +136,9 @@ Postman-Token: 95b0b2b8-f8fc-2a22-fdfe-1d79859e06e8
 
 which will return a token:
 
-`77245d1a-49f7-40e6-aa93-6313c43b1ade`
+~~~
+77245d1a-49f7-40e6-aa93-6313c43b1ade
+~~~
 
 #### 2. Call the Shortcuts `authenticate_customer` endpoint with the customer token
 
@@ -146,8 +146,6 @@ which will return a token:
 POST /authenticate_customer HTTP/1.1
 Host: localhost:9090
 Authorization: OAuth foo
-Cache-Control: no-cache
-Postman-Token: d3d7ab1d-36ea-086f-4a14-dc0c420d45e8
 
 {
   "credential_type_code": "access_token",
@@ -160,7 +158,9 @@ _NB: don't forget to send some OAuth credentials in the `Authorization` header._
 
 The Shortcuts endpoint will return the following response:
 
-`this body would normally contain a full Shortcuts response`
+~~~
+in real life this body would contain a Shortcuts customer session response
+~~~
 
 #### 3. If you would like to see what is happening in the Salon Resource Server, you can manually execute the following 
 
@@ -168,8 +168,6 @@ The Shortcuts endpoint will return the following response:
 GET /validate HTTP/1.1
 Host: localhost:8080
 Authorization: Bearer  77245d1a-49f7-40e6-aa93-6313c43b1ade
-Cache-Control: no-cache
-Postman-Token: 10e13f9b-fd0e-5857-8eea-5957a708818e
 ~~~
 
 which will return the following response:

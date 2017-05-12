@@ -1,19 +1,16 @@
 package com.shortcuts.example.single_signon.shortcuts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shortcuts.example.single_signon.salon.AuthenticationCredentials;
-import com.shortcuts.example.single_signon.salon.AuthenticationTokenService;
-import com.shortcuts.example.single_signon.salon.ValidatedCredentials;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * This is an example Shortcuts server which provides an endpoint
@@ -21,9 +18,6 @@ import java.io.IOException;
  */
 @RestController
 public class AuthenticateCustomerServer {
-
-    @Autowired
-    private CustomerTokenValidationService customerTokenValidationService;
 
     @RequestMapping(value = "/authenticate_customer", method = RequestMethod.POST)
     private ResponseEntity<String> authenticate(RequestEntity<String> request) throws IOException {
@@ -43,14 +37,13 @@ public class AuthenticateCustomerServer {
 
                 if (validateCustomerToken(authenticateCustomerBody)) {
                     // customer token is good
-                    return new ResponseEntity<>("this body would normally contain a full Shortcuts response", HttpStatus.OK);
+                    return new ResponseEntity<>("in real life this body would contain a Shortcuts customer session response", HttpStatus.OK);
                 }
 
             }
 
         } catch (Exception e) {
             // unauthorized, fall through
-            e.printStackTrace();
         }
 
         // authentication failed, return error
@@ -68,14 +61,37 @@ public class AuthenticateCustomerServer {
     }
 
     /**
-     * An example implementation of customer token validation using
-     * callback to the customer's Salon Resource Server.
+     * An example implementation of customer token validation
+     * using a callback to the Salon Resource Server.
      *
      * @param authenticateCustomerBody
      * @return a boolean indicating whether the Salon Resource Server validated the customer token.
      */
     private boolean validateCustomerToken(AuthenticateCustomerBody authenticateCustomerBody) throws Exception {
-        return customerTokenValidationService.validate(authenticateCustomerBody);
+
+        URI callbackUri = getCallbackUri(authenticateCustomerBody.getTokenType());
+
+        // prepare the callback request to the Salon Resource Server
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", String.format("Bearer %s", authenticateCustomerBody.getAccessToken()));
+        RequestEntity<String> request = new RequestEntity<>(headers, HttpMethod.GET, callbackUri);
+
+        // make the HTTP request to the Salon Resource Server
+        try {
+            ResponseEntity<String> response = new RestTemplate().exchange(request, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                // validation of customer token succeeded
+                return true;
+            }
+        } catch (Exception e) {
+            // callback error, fall through
+        }
+
+        return false;
     }
 
+    private URI getCallbackUri(String tokenType) throws URISyntaxException {
+        return new URI("http://localhost:8080/validate");
+    }
 }
