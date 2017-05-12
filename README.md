@@ -17,8 +17,6 @@ behave and interact with each other, and how to implement them.
 There are 4 parts _of which you will have to implement only 2_. You can use this example as a starting 
 point for your implementation, by changing it to carry out real authentication using your existing systems.
 
----
-
 The component parts are:
 
 ### 1. The Salon Authorization Server
@@ -59,7 +57,6 @@ That's all you need to implement. However, there are a few additional things tha
 1. Get valid OAuth credentials to interact with Shortcuts Online Services
 2. Let Shortcuts know where your Salon Resource Server (2) is, so that we can use it to validate tokens.
 
----
 
 ## This is the sequence of events
 
@@ -71,7 +68,7 @@ That's all you need to implement. However, there are a few additional things tha
 | 4    | You       | Return customer information if the token is valid |
 | 5    | Shortcuts | Create a session for the returned customer details |
 
-That's essentially all there is to it. There are a few details that need to be correct though:
+That's essentially all there is to it. There are a few more details that need to be worked through:
 
 When you call the `authenticate_customer` endpoint you will still need to authenticate using the OAuth 
 credentials that were issued to your organization. We will only attempt the callback to your Salon Resource
@@ -92,19 +89,17 @@ allows you to specify multiple Salon Resource Servers for different uses.
 
 When we call your Salon Resource Server, we will use the HTTP `GET` verb. You can see in the example that the
 important information in this request is in the `Authorization` header. Don't confuse the authorization header 
-that you send us (wich contains OAuth credentials) with the authorization header that we send to your Salon Resource 
-Server, which contains a string that looks like this: `"Bearer <token>"`
+that you send us (which contains OAuth credentials) with the authorization header that we send to your Salon 
+Resource Server (which contains a string that looks like this: `"Bearer <token>"`)
 
-
----
 
 ## How to run the example
 
-The sample consists of two servers. The first server listens on port 8080, and has implementations of the
-Salon Authorization Server, and the Salon Resource Server as described above. 
+The sample consists of two HTTP servers. The first server listens on port 8080, and has implementations of 
+the Salon Authorization Server endpoint, and the Salon Resource Server endpoint as described above. 
 
-The second server listens on port 9090, and contains an implementation of the `authenticate_customer` endpoint.
-The sample implementation is here:
+The second server listens on port 9090, and contains an implementation of the Shortcuts 
+`authenticate_customer` endpoint. The sample implementation is here:
 [AuthenticateCustomerServer.java](src/main/java/com/shortcuts/example/single_signon/shortcuts/AuthenticateCustomerServer.java) 
 
 You can regard the servers as a 'Salon' server (on 8080), and 'Shortcuts' server (on 9090).
@@ -115,7 +110,7 @@ that are used here.
 
 To run the example:
 
-1. install Java 8 and gradle 3.5 or above.
+1. install [Java 8](https://www.oracle.com/java/index.html) and [Gradle 3.5](https://gradle.org/) or above
 1. clone the repository
 1. change directory into the cloned repository: `cd <repository folder>`
 1. build the example: `gradle clean build`
