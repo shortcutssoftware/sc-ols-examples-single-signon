@@ -77,7 +77,7 @@ and you supply the customer token in the request body, formatted as a JSON paylo
 
 ~~~ json
 {
-  "credential_type_code": "access_token"
+  "credential_type_code": "access_token",
   "token_type": "<token_type>",
   "access_token": "<token>"
 }
